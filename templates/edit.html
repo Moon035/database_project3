@@ -7,17 +7,23 @@
 
 <h1>Edit Device</h1>
 
+<a href="/">Back to Device List</a>
+<a href="/dashboard">Dashboard</a>
+<a href="/logs">View Logs</a>
+
+<br><br>
+
 <form method="post">
-    <label>Name:</label>
-    <input type="text" name="device_name" value="{{ device.device_name }}" required>
+    <label for="device_name">Name:</label>
+    <input type="text" id="device_name" name="device_name" value="{{ device.device_name }}" required>
     <br><br>
 
-    <label>Type:</label>
-    <input type="text" name="device_type" value="{{ device.device_type }}" required>
+    <label for="device_type">Type:</label>
+    <input type="text" id="device_type" name="device_type" value="{{ device.device_type }}" required>
     <br><br>
 
-    <label>Status:</label>
-    <select name="status">
+    <label for="status">Status:</label>
+    <select id="status" name="status">
         <option value="ON" {% if device.status == 'ON' %}selected{% endif %}>ON</option>
         <option value="OFF" {% if device.status == 'OFF' %}selected{% endif %}>OFF</option>
         <option value="STANDBY" {% if device.status == 'STANDBY' %}selected{% endif %}>STANDBY</option>
@@ -25,35 +31,32 @@
     </select>
     <br><br>
 
-    <label>User:</label>
-    <select name="user_id">
+    <label for="user_id">User:</label>
+    <select id="user_id" name="user_id">
         {% for u in users %}
-            <option value="{{ u.user_id }}" {% if u.user_id == device.user_id %}selected{% endif %}>
-                {{ u.username }}
-            </option>
+        <option value="{{ u.user_id }}" {% if u.user_id == device.user_id %}selected{% endif %}>
+            {{ u.username }}
+        </option>
         {% endfor %}
     </select>
     <br><br>
 
-    <label>Room:</label>
-    <select name="room_id">
+    <label for="room_id">Room:</label>
+    <select id="room_id" name="room_id">
         {% for r in rooms %}
-            <option value="{{ r.room_id }}" {% if r.room_id == device.room_id %}selected{% endif %}>
-                {{ r.room_name }}
-            </option>
+        <option value="{{ r.room_id }}" {% if r.room_id == device.room_id %}selected{% endif %}>
+            {{ r.room_name }}
+        </option>
         {% endfor %}
     </select>
     <br><br>
 
-    <label>Power Usage (Watts):</label>
-    <input type="number" step="0.01" name="power_usage_watts" value="{{ device.power_usage_watts }}" required>
+    <label for="power_usage_watts">Power Usage:</label>
+    <input type="number" step="0.01" id="power_usage_watts" name="power_usage_watts" value="{{ device.power_usage_watts }}" required>
     <br><br>
 
     <button type="submit">Update Device</button>
 </form>
-
-<br>
-<a href="/">Back to Device List</a>
 
 </body>
 </html>

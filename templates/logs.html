@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Device Logs</title>
+</head>
+<body>
+
+<h1>Device Logs</h1>
+
+<a href="/">Back to Device List</a>
+<a href="/dashboard">Dashboard</a>
+<a href="/add">Add Device</a>
+
+<br><br>
+
+{% if logs %}
+<table border="1">
+    <tr>
+        <th>Log ID</th>
+        <th>Device ID</th>
+        <th>Device Name</th>
+        <th>Action</th>
+        <th>Action Date</th>
+        <th>Notes</th>
+        <th>Last Updated</th>
+    </tr>
+
+    {% for log in logs %}
+    <tr>
+        <td>{{ log.log_id }}</td>
+        <td>{{ log.device_id }}</td>
+        <td>{{ log.device_name }}</td>
+        <td>{{ log.action_type }}</td>
+        <td>{{ log.action_date }}</td>
+        <td>{{ log.notes }}</td>
+        <td>{{ log.last_updated_metadata }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No logs found.</p>
+{% endif %}
+
+</body>
+</html>

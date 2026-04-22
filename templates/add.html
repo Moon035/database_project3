@@ -7,36 +7,48 @@
 
 <h1>Add Device</h1>
 
+<a href="/">Back to Device List</a>
+<a href="/dashboard">Dashboard</a>
+<a href="/logs">View Logs</a>
+
+<br><br>
+
 <form method="post">
-    Name: <input type="text" name="device_name"><br>
-    Type: <input type="text" name="device_type"><br>
+    <label for="device_name">Name:</label>
+    <input type="text" id="device_name" name="device_name" required>
+    <br><br>
 
-    Status:
-    <select name="status">
-        <option>ON</option>
-        <option>OFF</option>
-        <option>STANDBY</option>
-        <option>ERROR</option>
-    </select><br>
+    <label for="device_type">Type:</label>
+    <input type="text" id="device_type" name="device_type" required>
+    <br><br>
 
-    User:
-    <select name="user_id">
+    <label for="status">Status:</label>
+    <select id="status" name="status">
+        <option value="ON">ON</option>
+        <option value="OFF">OFF</option>
+        <option value="STANDBY">STANDBY</option>
+        <option value="ERROR">ERROR</option>
+    </select>
+    <br><br>
+
+    <label for="user_id">User:</label>
+    <select id="user_id" name="user_id">
         {% for u in users %}
         <option value="{{ u.user_id }}">{{ u.username }}</option>
         {% endfor %}
-    </select><br>
+    </select>
+    <br><br>
 
-    Room:
-    <select name="room_id">
+    <label for="room_id">Room:</label>
+    <select id="room_id" name="room_id">
         {% for r in rooms %}
         <option value="{{ r.room_id }}">{{ r.room_name }}</option>
         {% endfor %}
-    </select><br>
+    </select>
+    <br><br>
 
-    <button type="submit">Add</button>
+    <button type="submit">Add Device</button>
 </form>
-
-<a href="/">Back</a>
 
 </body>
 </html>

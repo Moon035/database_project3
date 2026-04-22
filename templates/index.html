@@ -8,7 +8,12 @@
 <h1>Device List</h1>
 
 <a href="/add">Add Device</a>
+<a href="/dashboard">Dashboard</a>
+<a href="/logs">View Logs</a>
 
+<br><br>
+
+{% if devices %}
 <table border="1">
     <tr>
         <th>ID</th>
@@ -17,6 +22,7 @@
         <th>Status</th>
         <th>User</th>
         <th>Room</th>
+        <th>Power Usage</th>
         <th>Action</th>
     </tr>
 
@@ -28,6 +34,7 @@
         <td>{{ d.status }}</td>
         <td>{{ d.username }}</td>
         <td>{{ d.room_name }}</td>
+        <td>{{ d.power_usage_watts }}</td>
         <td>
             <a href="/edit/{{ d.device_id }}">Edit</a>
             <a href="/delete/{{ d.device_id }}">Delete</a>
@@ -35,6 +42,9 @@
     </tr>
     {% endfor %}
 </table>
+{% else %}
+<p>No devices found.</p>
+{% endif %}
 
 </body>
 </html>
