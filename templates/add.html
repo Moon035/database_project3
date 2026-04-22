@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Device</title>
+</head>
+<body>
+
+<h1>Add Device</h1>
+
+<form method="post">
+    Name: <input type="text" name="device_name"><br>
+    Type: <input type="text" name="device_type"><br>
+
+    Status:
+    <select name="status">
+        <option>ON</option>
+        <option>OFF</option>
+        <option>STANDBY</option>
+        <option>ERROR</option>
+    </select><br>
+
+    User:
+    <select name="user_id">
+        {% for u in users %}
+        <option value="{{ u.user_id }}">{{ u.username }}</option>
+        {% endfor %}
+    </select><br>
+
+    Room:
+    <select name="room_id">
+        {% for r in rooms %}
+        <option value="{{ r.room_id }}">{{ r.room_name }}</option>
+        {% endfor %}
+    </select><br>
+
+    <button type="submit">Add</button>
+</form>
+
+<a href="/">Back</a>
+
+</body>
+</html>

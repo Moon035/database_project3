@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Device</title>
+</head>
+<body>
+
+<h1>Edit Device</h1>
+
+<form method="post">
+    <label>Name:</label>
+    <input type="text" name="device_name" value="{{ device.device_name }}" required>
+    <br><br>
+
+    <label>Type:</label>
+    <input type="text" name="device_type" value="{{ device.device_type }}" required>
+    <br><br>
+
+    <label>Status:</label>
+    <select name="status">
+        <option value="ON" {% if device.status == 'ON' %}selected{% endif %}>ON</option>
+        <option value="OFF" {% if device.status == 'OFF' %}selected{% endif %}>OFF</option>
+        <option value="STANDBY" {% if device.status == 'STANDBY' %}selected{% endif %}>STANDBY</option>
+        <option value="ERROR" {% if device.status == 'ERROR' %}selected{% endif %}>ERROR</option>
+    </select>
+    <br><br>
+
+    <label>User:</label>
+    <select name="user_id">
+        {% for u in users %}
+            <option value="{{ u.user_id }}" {% if u.user_id == device.user_id %}selected{% endif %}>
+                {{ u.username }}
+            </option>
+        {% endfor %}
+    </select>
+    <br><br>
+
+    <label>Room:</label>
+    <select name="room_id">
+        {% for r in rooms %}
+            <option value="{{ r.room_id }}" {% if r.room_id == device.room_id %}selected{% endif %}>
+                {{ r.room_name }}
+            </option>
+        {% endfor %}
+    </select>
+    <br><br>
+
+    <label>Power Usage (Watts):</label>
+    <input type="number" step="0.01" name="power_usage_watts" value="{{ device.power_usage_watts }}" required>
+    <br><br>
+
+    <button type="submit">Update Device</button>
+</form>
+
+<br>
+<a href="/">Back to Device List</a>
+
+</body>
+</html>

@@ -19,18 +19,19 @@ The database design is based on four related tables:
 ---
 
 ## Features
-- Multi-table CRUD across related tables
-- One-to-many relationship handling
-- Device log tracking
-- Server-side validation for bad input
-- Summary dashboard using aggregate queries
-- Transaction-based update logic for device status and log creation
+- CRUD operations for devices
+- Relationship handling using foreign keys
+- Device status tracking
+- Edit and delete functionality
+- Basic UI and HTML templates
+- Data displayed using SQL JOIN queries
+
+---
 
 ## Technical Stack
 - SQLite
 - Python3
-- HTML
-- CSS
+- HTML/CSS
 
 ---
 

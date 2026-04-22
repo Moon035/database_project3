@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Devices</title>
+</head>
+<body>
+
+<h1>Device List</h1>
+
+<a href="/add">Add Device</a>
+
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>User</th>
+        <th>Room</th>
+        <th>Action</th>
+    </tr>
+
+    {% for d in devices %}
+    <tr>
+        <td>{{ d.device_id }}</td>
+        <td>{{ d.device_name }}</td>
+        <td>{{ d.device_type }}</td>
+        <td>{{ d.status }}</td>
+        <td>{{ d.username }}</td>
+        <td>{{ d.room_name }}</td>
+        <td>
+            <a href="/edit/{{ d.device_id }}">Edit</a>
+            <a href="/delete/{{ d.device_id }}">Delete</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>
