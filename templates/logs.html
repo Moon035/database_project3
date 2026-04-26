@@ -5,11 +5,12 @@
 </head>
 <body>
 
-<h1>Device Logs</h1>
+<h1>{{ user.username }}'s Device Logs</h1>
 
-<a href="/">Back to Device List</a>
-<a href="/dashboard">Dashboard</a>
-<a href="/add">Add Device</a>
+<a href="/user/{{ user.user_id }}">Back to Device List</a>
+<a href="/user/{{ user.user_id }}/dashboard">Dashboard</a>
+<a href="/user/{{ user.user_id }}/add">Add Device</a>
+<a href="/">Change User</a>
 
 <br><br>
 
@@ -38,7 +39,7 @@
     {% endfor %}
 </table>
 {% else %}
-<p>No logs found.</p>
+<p>No logs found for this user.</p>
 {% endif %}
 
 </body>

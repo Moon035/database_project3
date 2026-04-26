@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ user.username }}'s Devices</title>
+</head>
+<body>
+
+<h1>{{ user.username }}'s Device List</h1>
+
+<a href="/">Change User</a>
+<a href="/user/{{ user.user_id }}/add">Add Device</a>
+<a href="/user/{{ user.user_id }}/dashboard">Dashboard</a>
+<a href="/user/{{ user.user_id }}/logs">View Logs</a>
+
+<br><br>
+
+{% if devices %}
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Room</th>
+        <th>Power Usage</th>
+        <th>Action</th>
+    </tr>
+
+    {% for d in devices %}
+    <tr>
+        <td>{{ d.device_id }}</td>
+        <td>{{ d.device_name }}</td>
+        <td>{{ d.device_type }}</td>
+        <td>{{ d.status }}</td>
+        <td>{{ d.room_name }}</td>
+        <td>{{ d.power_usage_watts }}</td>
+        <td>
+            <a href="/user/{{ user.user_id }}/edit/{{ d.device_id }}">Edit</a>
+            <a href="/user/{{ user.user_id }}/delete/{{ d.device_id }}">Delete</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No devices found for this user.</p>
+{% endif %}
+
+</body>
+</html>

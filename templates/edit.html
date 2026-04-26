@@ -5,11 +5,11 @@
 </head>
 <body>
 
-<h1>Edit Device</h1>
+<h1>Edit Device for {{ user.username }}</h1>
 
-<a href="/">Back to Device List</a>
-<a href="/dashboard">Dashboard</a>
-<a href="/logs">View Logs</a>
+<a href="/user/{{ user.user_id }}">Back to Device List</a>
+<a href="/user/{{ user.user_id }}/dashboard">Dashboard</a>
+<a href="/user/{{ user.user_id }}/logs">View Logs</a>
 
 <br><br>
 
@@ -28,16 +28,6 @@
         <option value="OFF" {% if device.status == 'OFF' %}selected{% endif %}>OFF</option>
         <option value="STANDBY" {% if device.status == 'STANDBY' %}selected{% endif %}>STANDBY</option>
         <option value="ERROR" {% if device.status == 'ERROR' %}selected{% endif %}>ERROR</option>
-    </select>
-    <br><br>
-
-    <label for="user_id">User:</label>
-    <select id="user_id" name="user_id">
-        {% for u in users %}
-        <option value="{{ u.user_id }}" {% if u.user_id == device.user_id %}selected{% endif %}>
-            {{ u.username }}
-        </option>
-        {% endfor %}
     </select>
     <br><br>
 

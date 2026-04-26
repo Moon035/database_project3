@@ -2,7 +2,8 @@
 
 ## Project Description
 This project is a full-stack Python web application for managing smart home devices.
-It allows users to organize devices by room, track device status, and store activity logs for each device.
+
+The application allows users to select a profile and view only their own devices, similar to a user-based system. Each user can manage devices assigned to them, track device status, and view activity logs.
 
 The app is designed for a simple smart home environment where users can:
 - manage rooms
@@ -19,6 +20,7 @@ The database design is based on four related tables:
 ---
 
 ## Features
+- User selection interface (user-based device view)
 - CRUD operations for devices
 - Relationship handling using foreign keys
 - Device status tracking

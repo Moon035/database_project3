@@ -1,98 +1,149 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
+from flask import Flask, render_template, request, redirect, url_for
 
 app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_NAME = os.path.join(BASE_DIR, "project3.db")
 
-# Connect to DB
+
 def get_db_connection():
     conn = sqlite3.connect(DB_NAME)
     conn.row_factory = sqlite3.Row
     return conn
 
 
-# Home
+# User selection page
 @app.route("/")
 def index():
     conn = get_db_connection()
-
-    devices = conn.execute("""
-        SELECT devices.device_id, devices.device_name, devices.device_type, devices.status,
-               devices.install_date, devices.power_usage_watts, users.username, rooms.room_name
-                           
-        FROM devices
-                           
-        JOIN users ON devices.user_id = users.user_id
-        JOIN rooms ON devices.room_id = rooms.room_id
-        ORDER BY devices.device_id""").fetchall()
-    
+    users = conn.execute("SELECT * FROM users ORDER BY user_id").fetchall()
     conn.close()
-    return render_template("index.html", devices=devices)
+    return render_template("index.html", users=users)
 
 
-# Add device
-@app.route("/add", methods=("GET", "POST"))
-def add_device():
+# Device list for selected user
+@app.route("/user/<int:user_id>")
+def user_devices(user_id):
     conn = get_db_connection()
 
-    users = conn.execute("SELECT * FROM users").fetchall()
-    rooms = conn.execute("SELECT * FROM rooms").fetchall()
+    user = conn.execute(
+        "SELECT * FROM users WHERE user_id = ?",
+        (user_id,)
+    ).fetchone()
+
+    if user is None:
+        conn.close()
+        return "User not found", 404
+
+    devices = conn.execute("""
+        SELECT devices.device_id,
+               devices.device_name,
+               devices.device_type,
+               devices.status,
+               devices.install_date,
+               devices.power_usage_watts,
+               rooms.room_name
+        FROM devices
+        JOIN rooms ON devices.room_id = rooms.room_id
+        WHERE devices.user_id = ?
+        ORDER BY devices.device_id
+    """, (user_id,)).fetchall()
+
+    conn.close()
+    return render_template("devices.html", user=user, devices=devices)
+
+
+# Add device for selected user
+@app.route("/user/<int:user_id>/add", methods=("GET", "POST"))
+def add_device(user_id):
+    conn = get_db_connection()
+
+    user = conn.execute(
+        "SELECT * FROM users WHERE user_id = ?",
+        (user_id,)
+    ).fetchone()
+
+    rooms = conn.execute("SELECT * FROM rooms ORDER BY room_id").fetchall()
+
+    if user is None:
+        conn.close()
+        return "User not found", 404
 
     if request.method == "POST":
         name = request.form["device_name"].strip()
         dtype = request.form["device_type"].strip()
         status = request.form["status"]
-        user_id = request.form["user_id"]
         room_id = request.form["room_id"]
 
         if not name or not dtype:
             conn.close()
             return "Device name and device type are required.", 400
-        
+
         cursor = conn.cursor()
 
         try:
-            # insert device
             cursor.execute("""
-                INSERT INTO devices(device_name, device_type, status, user_id, room_id, install_date, 
-                                    power_usage_watts, last_updated_metadata) 
-                VALUES (?, ?, ?, ?, ?, DATE('now'), 0, DATETIME('now'))""", (name, dtype, status, user_id, room_id))
+                INSERT INTO devices (
+                    device_name,
+                    device_type,
+                    status,
+                    user_id,
+                    room_id,
+                    install_date,
+                    power_usage_watts,
+                    last_updated_metadata
+                )
+                VALUES (?, ?, ?, ?, ?, DATE('now'), 0, DATETIME('now'))
+            """, (name, dtype, status, user_id, room_id))
+
             new_device_id = cursor.lastrowid
 
-            # insert log
             cursor.execute("""
                 INSERT INTO device_logs (
-                           device_id, action_type, action_date, notes, last_updated_metadata)
-                VALUES (?, ?, DATE('now'), ?, DATETIME('now'))""", (new_device_id, "Created", f"{name} was added"))
-            conn.commit()
+                    device_id,
+                    action_type,
+                    action_date,
+                    notes,
+                    last_updated_metadata
+                )
+                VALUES (?, ?, DATE('now'), ?, DATETIME('now'))
+            """, (new_device_id, "Created", f"{name} was added."))
 
+            conn.commit()
         except sqlite3.Error as e:
             conn.rollback()
             conn.close()
             return f"Database error: {e}", 500
-        
+
         conn.close()
-        return redirect(url_for("index"))
-    
+        return redirect(url_for("user_devices", user_id=user_id))
+
     conn.close()
-    return render_template("add.html", users=users, rooms=rooms)
+    return render_template("add.html", user=user, rooms=rooms)
 
 
-# Edit device
-@app.route("/edit/<int:id>", methods=("GET", "POST"))
-def edit_device(id):
+# Edit selected user's device
+@app.route("/user/<int:user_id>/edit/<int:device_id>", methods=("GET", "POST"))
+def edit_device(user_id, device_id):
     conn = get_db_connection()
 
-    device = conn.execute(
-        "SELECT * FROM devices WHERE device_id = ?",
-        (id,)
+    user = conn.execute(
+        "SELECT * FROM users WHERE user_id = ?",
+        (user_id,)
     ).fetchone()
 
-    users = conn.execute("SELECT * FROM users ORDER BY user_id").fetchall()
+    device = conn.execute(
+        "SELECT * FROM devices WHERE device_id = ? AND user_id = ?",
+        (device_id, user_id)
+    ).fetchone()
+
     rooms = conn.execute("SELECT * FROM rooms ORDER BY room_id").fetchall()
+
+    if user is None:
+        conn.close()
+        return "User not found", 404
 
     if device is None:
         conn.close()
@@ -102,7 +153,6 @@ def edit_device(id):
         name = request.form["device_name"].strip()
         dtype = request.form["device_type"].strip()
         status = request.form["status"]
-        user_id = request.form["user_id"]
         room_id = request.form["room_id"]
         power_usage = request.form["power_usage_watts"]
 
@@ -122,24 +172,27 @@ def edit_device(id):
         cursor = conn.cursor()
 
         try:
-            # update device
             cursor.execute("""
                 UPDATE devices
                 SET device_name = ?,
                     device_type = ?,
                     status = ?,
-                    user_id = ?,
                     room_id = ?,
                     power_usage_watts = ?,
                     last_updated_metadata = DATETIME('now')
-                WHERE device_id = ?
-            """, (name, dtype, status, user_id, room_id, power_usage_value, id))
+                WHERE device_id = ? AND user_id = ?
+            """, (name, dtype, status, room_id, power_usage_value, device_id, user_id))
 
-            # insert log
             cursor.execute("""
                 INSERT INTO device_logs (
-                    device_id, action_type, action_date, notes, last_updated_metadata)
-                VALUES (?, ?, DATE('now'), ?, DATETIME('now'))""", (id, "Updated", f"{name} was updated."))
+                    device_id,
+                    action_type,
+                    action_date,
+                    notes,
+                    last_updated_metadata
+                )
+                VALUES (?, ?, DATE('now'), ?, DATETIME('now'))
+            """, (device_id, "Updated", f"{name} was updated."))
 
             conn.commit()
         except sqlite3.Error as e:
@@ -148,20 +201,20 @@ def edit_device(id):
             return f"Database error: {e}", 500
 
         conn.close()
-        return redirect(url_for("index"))
+        return redirect(url_for("user_devices", user_id=user_id))
 
     conn.close()
-    return render_template("edit.html", device=device, users=users, rooms=rooms)
+    return render_template("edit.html", user=user, device=device, rooms=rooms)
 
 
-# Delete device
-@app.route("/delete/<int:id>")
-def delete_device(id):
+# Delete selected user's device
+@app.route("/user/<int:user_id>/delete/<int:device_id>")
+def delete_device(user_id, device_id):
     conn = get_db_connection()
 
     device = conn.execute(
-        "SELECT * FROM devices WHERE device_id = ?",
-        (id,)
+        "SELECT * FROM devices WHERE device_id = ? AND user_id = ?",
+        (device_id, user_id)
     ).fetchone()
 
     if device is None:
@@ -169,7 +222,10 @@ def delete_device(id):
         return "Device not found", 404
 
     try:
-        conn.execute("DELETE FROM devices WHERE device_id = ?", (id,))
+        conn.execute(
+            "DELETE FROM devices WHERE device_id = ? AND user_id = ?",
+            (device_id, user_id)
+        )
         conn.commit()
     except sqlite3.Error as e:
         conn.rollback()
@@ -177,53 +233,83 @@ def delete_device(id):
         return f"Database error: {e}", 500
 
     conn.close()
-    return redirect(url_for("index"))
+    return redirect(url_for("user_devices", user_id=user_id))
 
 
-# Dashboard
-@app.route("/dashboard")
-def dashboard():
+# Dashboard for selected user
+@app.route("/user/<int:user_id>/dashboard")
+def dashboard(user_id):
     conn = get_db_connection()
 
-    total_devices = conn.execute(
-        "SELECT COUNT(*) AS count FROM devices"
-    ).fetchone()["count"]
+    user = conn.execute(
+        "SELECT * FROM users WHERE user_id = ?",
+        (user_id,)
+    ).fetchone()
 
-    on_devices = conn.execute(
-        "SELECT COUNT(*) AS count FROM devices WHERE status = 'ON'"
-    ).fetchone()["count"]
+    if user is None:
+        conn.close()
+        return "User not found", 404
 
-    avg_power = conn.execute(
-        "SELECT AVG(power_usage_watts) AS avg_power FROM devices"
-    ).fetchone()["avg_power"]
+    total_devices = conn.execute("""
+        SELECT COUNT(*) AS count
+        FROM devices
+        WHERE user_id = ?
+    """, (user_id,)).fetchone()["count"]
+
+    on_devices = conn.execute("""
+        SELECT COUNT(*) AS count
+        FROM devices
+        WHERE user_id = ? AND status = 'ON'
+    """, (user_id,)).fetchone()["count"]
+
+    avg_power = conn.execute("""
+        SELECT AVG(power_usage_watts) AS avg_power
+        FROM devices
+        WHERE user_id = ?
+    """, (user_id,)).fetchone()["avg_power"]
 
     conn.close()
 
     return render_template(
         "dashboard.html",
+        user=user,
         total_devices=total_devices,
         on_devices=on_devices,
         avg_power=avg_power
     )
 
 
-# View logs
-@app.route("/logs")
-def view_logs():
+# Logs for selected user's devices
+@app.route("/user/<int:user_id>/logs")
+def view_logs(user_id):
     conn = get_db_connection()
 
+    user = conn.execute(
+        "SELECT * FROM users WHERE user_id = ?",
+        (user_id,)
+    ).fetchone()
+
+    if user is None:
+        conn.close()
+        return "User not found", 404
+
     logs = conn.execute("""
-        SELECT device_logs.log_id, device_logs.device_id, devices.device_name, device_logs.action_type,
-               device_logs.action_date, device_logs.notes, device_logs.last_updated_metadata
+        SELECT device_logs.log_id,
+               device_logs.device_id,
+               devices.device_name,
+               device_logs.action_type,
+               device_logs.action_date,
+               device_logs.notes,
+               device_logs.last_updated_metadata
         FROM device_logs
         JOIN devices ON device_logs.device_id = devices.device_id
+        WHERE devices.user_id = ?
         ORDER BY device_logs.log_id DESC
-    """).fetchall()
+    """, (user_id,)).fetchall()
 
     conn.close()
-    return render_template("logs.html", logs=logs)
+    return render_template("logs.html", user=user, logs=logs)
 
 
 if __name__ == "__main__":
     app.run(debug=True)
-    
