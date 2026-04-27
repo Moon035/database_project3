@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rooms</title>
+</head>
+<body>
+
+<h1>Room List</h1>
+
+<a href="/">Back to User Selection</a>
+<a href="/rooms/add">Add Room</a>
+
+<br><br>
+
+{% if rooms %}
+<table border="1">
+    <tr>
+        <th>Room ID</th>
+        <th>Room Name</th>
+        <th>Floor</th>
+        <th>Device Count</th>
+        <th>Created Date</th>
+        <th>Last Updated</th>
+    </tr>
+
+    {% for room in rooms %}
+    <tr>
+        <td>{{ room.room_id }}</td>
+        <td>{{ room.room_name }}</td>
+        <td>{{ room.floor_number }}</td>
+        <td>{{ room.device_count }}</td>
+        <td>{{ room.created_date }}</td>
+        <td>{{ room.last_updated_metadata }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No rooms found.</p>
+{% endif %}
+
+</body>
+</html>

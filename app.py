@@ -23,6 +23,103 @@ def index():
     return render_template("index.html", users=users)
 
 
+# Add new user
+@app.route("/users/add", methods=("GET", "POST"))
+def add_user():
+    conn = get_db_connection()
+
+    if request.method == "POST":
+        username = request.form["username"].strip()
+        email = request.form["email"].strip()
+
+        if not username or not email:
+            conn.close()
+            return "Username and email are required", 400
+        
+        try:
+            conn.execute("""
+                INSERT INTO users(
+                    username,
+                    email,
+                    created_date,
+                    last_updated_metadata)
+                VALUES (?, ?, DATE('now'), DATETIME('now'))""", (username, email))
+            conn.commit()
+        except sqlite3.Error as e:
+            conn.rollback()
+            conn.close()
+            return f"Database error: {e}", 500
+        
+        conn.close()
+        return redirect(url_for("index"))
+    
+    conn.close()
+    return render_template("add_user.html")
+
+
+# Room List
+@app.route("/rooms")
+def room_list():
+    conn = get_db_connection()
+
+    rooms = conn.execute("""
+                SELECT rooms.room_id,
+                       rooms.room_name,
+                       rooms.floor_number,
+                       rooms.created_date,
+                       rooms.last_updated_metadata,
+                       COUNT(devices.device_id) AS device_count
+                FROM rooms
+                LEFT JOIN devices ON rooms.room_id = devices.room_id
+                GROUP BY rooms.room_id
+                ORDER BY rooms.room_id""").fetchall()
+    conn.close()
+    return render_template("rooms.html", rooms=rooms)
+
+
+# Add new room
+@app.route("/rooms/add", methods=("GET", "POST"))
+def add_room():
+    conn = get_db_connection()
+
+    if request.method == "POST":
+        room_name = request.form["room_name"].strip()
+        floor_number = request.form["floor_number"]
+
+        if not room_name:
+            conn.close()
+            return "Room name is required.", 400
+        
+        try:
+            floor_value = int(floor_number)
+            if floor_value < 0:
+                conn.close()
+                return "Floor number can't be negative.", 400
+        except ValueError:
+            conn.close()
+            return "Floor number must be a valid integer.", 400
+        
+        try:
+            conn.execute("""
+                INSERT INTO rooms (
+                    room_name,
+                    floor_number,
+                    created_date,
+                    last_updated_metadata)
+                VALUES (?, ?, DATE('now'), DATETIME('now'))""", (room_name, floor_value))
+            conn.commit()
+        except sqlite3.Error as e:
+            conn.rollback()
+            conn.close()
+            return f"Database error: {e}", 500
+        
+        conn.close()
+        return redirect(url_for("room_list"))
+    
+    conn.close()
+    return render_template("add_room.html")
+
+
 # Device list for selected user
 @app.route("/user/<int:user_id>")
 def user_devices(user_id):
