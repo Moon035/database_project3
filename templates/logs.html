@@ -2,17 +2,20 @@
 <html>
 <head>
     <title>Device Logs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
 
+<body>
+<div class="container">
 <h1>{{ user.username }}'s Device Logs</h1>
 
-<a href="/user/{{ user.user_id }}">Back to Device List</a>
-<a href="/user/{{ user.user_id }}/dashboard">Dashboard</a>
-<a href="/user/{{ user.user_id }}/add">Add Device</a>
-<a href="/">Change User</a>
+<div class="nav">
+    <a href="/user/{{ user.user_id }}">Back to Device List</a>
+    <a href="/user/{{ user.user_id }}/dashboard">Dashboard</a>
+    <a href="/user/{{ user.user_id }}/add">Add Device</a>
+    <a href="/">Change User</a>
+</div>
 
-<br><br>
 
 {% if logs %}
 <table border="1">
@@ -42,5 +45,6 @@
 <p>No logs found for this user.</p>
 {% endif %}
 
+</div>
 </body>
 </html>

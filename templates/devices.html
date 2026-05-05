@@ -2,18 +2,22 @@
 <html>
 <head>
     <title>{{ user.username }}'s Devices</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
+<div class="container">
 
 <h1>{{ user.username }}'s Device List</h1>
 
-<a href="/">Change User</a>
-<a href="/rooms">View Rooms</a>
-<a href="/user/{{ user.user_id }}/add">Add Device</a>
-<a href="/user/{{ user.user_id }}/dashboard">Dashboard</a>
-<a href="/user/{{ user.user_id }}/logs">View Logs</a>
+<div class="nav">
+    <a href="/">Change User</a>
+    <a href="/rooms">View Rooms</a>
+    <a href="/user/{{ user.user_id }}/add">Add Device</a>
+    <a href="/user/{{ user.user_id }}/dashboard">Dashboard</a>
+    <a href="/user/{{ user.user_id }}/logs">View Logs</a>
+</div>
 
-<br><br>
 
 {% if devices %}
 <table border="1">
@@ -36,8 +40,8 @@
         <td>{{ d.room_name }}</td>
         <td>{{ d.power_usage_watts }}</td>
         <td>
-            <a href="/user/{{ user.user_id }}/edit/{{ d.device_id }}">Edit</a>
-            <a href="/user/{{ user.user_id }}/delete/{{ d.device_id }}">Delete</a>
+            <a class="edit-link" href="/user/{{ user.user_id }}/edit/{{ d.device_id }}">Edit</a>
+            <a class="delete-link" href="/user/{{ user.user_id }}/delete/{{ d.device_id }}" onclick="return confirm('Delete this device?')">Delete</a>
         </td>
     </tr>
     {% endfor %}
@@ -46,5 +50,6 @@
 <p>No devices found for this user.</p>
 {% endif %}
 
+</div>
 </body>
 </html>

@@ -2,26 +2,27 @@
 <html>
 <head>
     <title>Add Device</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
+<div class="container">
 
 <h1>Add Device for {{ user.username }}</h1>
 
-<a href="/user/{{ user.user_id }}">Back to Device List</a>
-<a href="/user/{{ user.user_id }}/dashboard">Dashboard</a>
-<a href="/user/{{ user.user_id }}/logs">View Logs</a>
-<a href="/rooms/add">Add Room</a>
-
-<br><br>
+<div class="nav">
+    <a href="/user/{{ user.user_id }}">Back to Device List</a>
+    <a href="/user/{{ user.user_id }}/dashboard">Dashboard</a>
+    <a href="/user/{{ user.user_id }}/logs">View Logs</a>
+    <a href="/rooms/add">Add Room</a>
+</div>
 
 <form method="post">
     <label for="device_name">Name:</label>
     <input type="text" id="device_name" name="device_name" required>
-    <br><br>
 
     <label for="device_type">Type:</label>
     <input type="text" id="device_type" name="device_type" required>
-    <br><br>
 
     <label for="status">Status:</label>
     <select id="status" name="status">
@@ -30,7 +31,6 @@
         <option value="STANDBY">STANDBY</option>
         <option value="ERROR">ERROR</option>
     </select>
-    <br><br>
 
     <label for="room_id">Room:</label>
     <select id="room_id" name="room_id">
@@ -38,10 +38,10 @@
         <option value="{{ r.room_id }}">{{ r.room_name }}</option>
         {% endfor %}
     </select>
-    <br><br>
 
     <button type="submit">Add Device</button>
 </form>
 
+</div>
 </body>
 </html>

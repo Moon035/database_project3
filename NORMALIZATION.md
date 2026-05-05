@@ -17,39 +17,34 @@
 
 ---
 
-## 2. Anomalies
+## 2. Analysis of Possible Anomalies
 
 ### users
-- Update anomaly is minimized since each user is stored in a single row.
-- Insertion anomaly is minimal.
-- Deletion must consider dependent device records.
+User information is stored in a separate table, so updating a user's information only requires modifying one row.
 
 ### rooms
-- Data is separated from devices, reducing redundancy.
-- Deletion may affect related devices.
+Room data is isolated from device records, which avoids repeating room details for every device.
 
 ### devices
-- Requires existing user and room (insertion dependency).
-- Removing a device may affect related logs.
+Each device references one user and one room through foreign keys, which prevents duplicate ownership or location data.
 
 ### device_logs
-- Depends on devices.
-- Deleting logs removes history information.
+Log records are separated from devices so multiple log entries can be stored without duplicating device information.
 
 ---
 
-## 3. Normalization
+## 3. Normal Form Evaluation
 
-Each table structured so taht:
-- All attributes depends on the priamry key
-- No martial dependencies exist
-- No transitive dependencies exist
+The schema was reviewed for normalization as follows:
 
-Therefore, the schema satisfies BCNF.
+- All tables satisfy **1NF** because each column stores atomic values.
+- All tables satisfy **2NF** because every non-key attribute fully depends on the entire primary key.
+- All tables satisfy **3NF** because no non-key attribute depends on another non-key attribute.
+- The schema satisfies **BCNF** because every determinant in each table is a candidate key.
 
-No additional decomposition was required.
+No further decomposition was necessary.
 
---- 
+---
 
 ## 4. Final Schema
 

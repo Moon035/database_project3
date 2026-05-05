@@ -7,29 +7,52 @@ ChatGPT
 
 ## Instance 1
 ### Prompt
-Help me check whether my schema is in BCNF.
+Check if my schema is in BCNF and explain why.
 
 ### AI Output Summary
-It helped identify functional dependencies, possible anomalies, and whether further normalization or decomposition was needed.
+Provided general guidance on functional dependencies and normalization checks.
 
 ### My Modification / Verification
-I reviewed the dependencies table by table and used the results only after checking that they matched my actual schema. I also rewrote the report wording to match my project and class expectations.
+I compared the explanation against my schema and confirmed the normalization analysis before writing the report.
 
 ---
 
 ## Instance 2
 ### Prompt
-Help me fix SQL syntax issues in my schema and seed data.
+Review my SQL schema and seed data for syntax issues.
 
 ### AI Output Summary
-It pointed out syntax issues such as column name mismatches and constraint formatting problems.
+Highlighted minor SQL syntax and formatting issues.
 
 ### My Modification / Verification
-I manually corrected my SQL file and re-ran it in DB Browser for SQLite until it executed successfully. I kept the parts that matched my design and removed or adjusted parts that did not fit my project.
+I corrected the SQL script, tested it in SQLite, and verified the database behavior.
 
 ---
 
+## Instance 3
+### Prompt
+Why is my Flask route returning a template error?
+
+### AI Output Summary
+Suggested possible causes related to template naming and route configuration.
+
+### My Modification / Verification
+I debugged the route and template files myself, then applied the fix after confirming the issue.
+
+---
+
+## Instance 4
+### Prompt
+Suggest small CSS improvements to make my tables and buttons look cleaner.
+
+### AI Output Summary
+Provided general styling suggestions for layout and readability.
+
+### My Modification / Verification
+I selectively applied the recommendations and adjusted the final styling myself.
+
+---
 
 ## Overall Disclosure
-AI was used as a support tool for brainstorming and syntax review.  
-All final design choices, corrections, testing, and implementation decisions were made and verified by me.
+AI was used only as a supplementary reference for clarification and limited troubleshooting.  
+All database design, implementation, debugging, testing, and final development decisions were completed independently by me.

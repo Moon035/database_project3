@@ -2,18 +2,20 @@
 <html>
 <head>
     <title>Rooms</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
 
+<body>
+<div class="container">
 <h1>Room List</h1>
 
-<a href="/">Back to User Selection</a>
-<a href="/rooms/add">Add Room</a>
-
-<br><br>
+<div class="nav">
+    <a href="/">Back to User Selection</a>
+    <a href="/rooms/add">Add Room</a>
+</div>
 
 {% if rooms %}
-<table border="1">
+<table>
     <tr>
         <th>Room ID</th>
         <th>Room Name</th>
@@ -34,9 +36,8 @@
     </tr>
     {% endfor %}
 </table>
-{% else %}
-<p>No rooms found.</p>
 {% endif %}
 
+</div>
 </body>
 </html>

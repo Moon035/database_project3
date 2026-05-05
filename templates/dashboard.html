@@ -2,21 +2,39 @@
 <html>
 <head>
     <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
+<div class="container">
 
 <h1>{{ user.username }}'s Dashboard</h1>
 
-<a href="/user/{{ user.user_id }}">Back to Device List</a>
-<a href="/user/{{ user.user_id }}/add">Add Device</a>
-<a href="/user/{{ user.user_id }}/logs">View Logs</a>
-<a href="/">Change User</a>
+<div class="nav">
+    <a href="/user/{{ user.user_id }}">Back to Device List</a>
+    <a href="/user/{{ user.user_id }}/add">Add Device</a>
+    <a href="/user/{{ user.user_id }}/logs">View Logs</a>
+    <a href="/">Change User</a>
+</div>
 
-<br><br>
+<div class="card-row">
+    <div class="card">
+        <strong>Total Devices</strong>
+        <span>{{ total_devices }}</span>
+    </div>
 
-<p><strong>Total Devices:</strong> {{ total_devices }}</p>
-<p><strong>Devices ON:</strong> {{ on_devices }}</p>
-<p><strong>Average Power Usage:</strong> {{ avg_power }}</p>
+    <div class="card">
+        <strong>Devices ON</strong>
+        <span>{{ on_devices }}</span>
+    </div>
 
+    <div class="card">
+        <strong>Average Power Usage</strong>
+        <span>{{ avg_power }}</span>
+    </div>
+</div>
+
+
+</div>
 </body>
 </html>
